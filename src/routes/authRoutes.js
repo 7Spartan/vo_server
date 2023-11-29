@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 router.post('/register', async (req, res) => {
     try {
         // Check if user already exists
+        console.log(`User trying to register ${req.body.email}`);
         let user = await User.findOne({ email: req.body.email });
         if (user) {
             return res.status(400).send('Email already registered.');
@@ -44,6 +45,7 @@ router.post('/login', async (req, res) => {
             });
             console.log(`logged in!`);
             // Send the token to the user
+            res.status(200);
             res.header('Authorization', `Bearer ${token}`).send('Logged in successfully.');
         } else {
             res.status(400).send('Password is incorrect.');

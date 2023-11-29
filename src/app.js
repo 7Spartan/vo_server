@@ -6,6 +6,9 @@ const initializePassport = require('./config/passport-setup');
 const User = require('./models/user');
 const authRoutes = require('./routes/authRoutes');
 const requireAuth = require('./middleware/authenticateMiddleware');
+const itemRoutes = require('./routes/itemRoutes');
+
+const cors = require('cors');
 
 require('dotenv').config();
 connectDB();
@@ -20,6 +23,10 @@ initializePassport(
 );
 app.use(express.json());
 
+app.use(cors({
+    origin:'http://localhost:3000',
+    exposedHeaders:['Authorization']
+}));
 // Express session middleware
 app.use(session({
     secret: process.env.SESSION_SECRET, 
@@ -30,14 +37,16 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/auth',authRoutes);
+
 app.get('/',(req,res)=> {
     res.send('Hello, Vo!');
 });
+app.use('/item', requireAuth, itemRoutes);
 app.get('/protected', requireAuth, (req, res) => {
     res.send('Access to protected resource granted!');
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3500;
 app.listen(PORT,'0.0.0.0',()=>{
     console.log(`Server is running on port ${PORT}`);
 });
