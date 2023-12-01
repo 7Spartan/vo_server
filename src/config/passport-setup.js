@@ -3,6 +3,11 @@ const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const bcrypt = require('bcrypt');
 const passport = require('passport');
+const User = require('../models/user');
+
+// async function getUserById(id) {
+//     return await User.findById(id).exec(); // Ensure the query is executed and a document is returned
+// }
 
 const initialize = (passport, getUserByEmail,getUserById)=>{
     const authenticateUser = async(email,password,done)=>{
@@ -28,12 +33,16 @@ const initialize = (passport, getUserByEmail,getUserById)=>{
     passport.use(new JwtStrategy({
         jwtFromRequest:ExtractJwt.fromAuthHeaderAsBearerToken(),
         secretOrKey: process.env.JWT_SECRET
-    },(jwt_payload,done)=>{
-        const user = getUserById(jwt_payload.sub);
-        if(user){
-            return done(null,user);
-        }else{
-            return done(null,false);
+    },async(jwt_payload,done)=>{
+        try{
+            const user = await getUserById(jwt_payload._id);
+            if(user){
+                return done(null,user);
+            }else{
+                return done(null,false);
+            }
+        }catch(error){
+            return done(error,false);
         }
     }));
 

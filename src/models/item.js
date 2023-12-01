@@ -24,6 +24,8 @@ const itemSchema = new mongoose.Schema({
     lastModified: Date
 });
 
+itemSchema.index({addedBy:1});
+
 const Item = mongoose.model('Item', itemSchema);
 
 module.exports = Item;

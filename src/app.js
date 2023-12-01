@@ -9,6 +9,7 @@ const requireAuth = require('./middleware/authenticateMiddleware');
 const itemRoutes = require('./routes/itemRoutes');
 
 const cors = require('cors');
+const router = require('./routes/itemRoutes');
 
 require('dotenv').config();
 connectDB();
@@ -24,7 +25,7 @@ initializePassport(
 app.use(express.json());
 
 app.use(cors({
-    origin:'http://localhost:3000',
+    origin:'*',
     exposedHeaders:['Authorization']
 }));
 // Express session middleware
