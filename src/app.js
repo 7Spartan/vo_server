@@ -7,9 +7,9 @@ const User = require('./models/user');
 const authRoutes = require('./routes/authRoutes');
 const requireAuth = require('./middleware/authenticateMiddleware');
 const itemRoutes = require('./routes/itemRoutes');
-
 const cors = require('cors');
 const router = require('./routes/itemRoutes');
+const infoRoutes = require('./routes/infoRoutes');
 
 require('dotenv').config();
 connectDB();
@@ -43,6 +43,7 @@ app.get('/',(req,res)=> {
     res.send('Hello, Vo!');
 });
 app.use('/item', requireAuth, itemRoutes);
+app.use('/info', requireAuth, infoRoutes);
 app.get('/protected', requireAuth, (req, res) => {
     res.send('Access to protected resource granted!');
 });

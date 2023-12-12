@@ -14,6 +14,7 @@ router.post('/add', async (req, res) => {
         console.log(newItem);
         res.status(201).json(newItem);
     }catch (error){
+        console.log(error.message);
         res.status(400).json({message:error.message});
     }
 });
@@ -30,4 +31,15 @@ router.get('/list', requireAuth, async (req, res) => {
     }
 });
 
+router.delete('/list', requireAuth, async(req,res) => {
+    const userId = req.user._id;
+    console.log(`${userId} trying to delete an item ${req.body.item._id}`);
+    try{
+        await Item.deleteOne({_id: req.body.item._id});
+        res.status(200).json({"message":"Deleted"});
+    }  catch(error){
+        console.log(error);
+        res.status(400);
+    }
+});
 module.exports = router;
