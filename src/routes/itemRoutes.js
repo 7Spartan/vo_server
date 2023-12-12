@@ -31,15 +31,20 @@ router.get('/list', requireAuth, async (req, res) => {
     }
 });
 
-router.delete('/list', requireAuth, async(req,res) => {
+router.post('/delete', requireAuth, async(req,res) => {
     const userId = req.user._id;
-    console.log(`${userId} trying to delete an item ${req.body.item._id}`);
+    const {itemIds} = req.body;
+    console.log(`${userId} trying to delete an item ${itemIds}`);
     try{
-        await Item.deleteOne({_id: req.body.item._id});
-        res.status(200).json({"message":"Deleted"});
+        const result = await Item.deleteMany({'_id':{$in:itemIds}})
+        if (result.deletedCount>0){
+            res.status(200).json({"message":"Deleted"});
+        }else{
+            res.status(404).json({"message":"no items to delete"});
+        }
     }  catch(error){
         console.log(error);
-        res.status(400);
+        res.status(500).json({message:"Error deleting items"});
     }
 });
 module.exports = router;
