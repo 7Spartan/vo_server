@@ -1,4 +1,7 @@
 const express = require('express');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 const passport = require('passport');
 const session = require('express-session');
 const connectDB = require('./config/dbConnection');
@@ -25,7 +28,8 @@ initializePassport(
 app.use(express.json());
 
 app.use(cors({
-    origin:'*',
+    origin:'https://192.168.1.71:3000',
+    credentials:true,
     exposedHeaders:['Authorization']
 }));
 // Express session middleware
@@ -49,6 +53,13 @@ app.get('/protected', requireAuth, (req, res) => {
 });
 
 const PORT = process.env.PORT || 3500;
-app.listen(PORT,'0.0.0.0',()=>{
-    console.log(`Server is running on port ${PORT}`);
+const SSL_CERT_PATH = './config/ssl/myserver.crt';
+const SSL_KEY_PATH = './config/ssl/myserver.key';
+
+https.createServer({
+    key: fs.readFileSync(path.resolve(__dirname, SSL_KEY_PATH)),
+    cert: fs.readFileSync(path.resolve(__dirname, SSL_CERT_PATH)),
+}, app)
+.listen(PORT, function () {
+    console.log('Server is running on https://localhost:3500');
 });
